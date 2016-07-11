@@ -1,8 +1,10 @@
 from turtle import Turtle
 default_scale = 10 #коэффициент масштабирования Чертежника, по умолчанию = 10
+default_color = 'black' #цвет Чертежника, по умолчанию = "черный"
 default_pen_size = 1 #толщина линии Чертежника, по умолчанию = 1
 
 def init_drawman():
+    """ Инициализация Чертежника"""
     global t, x_current, y_current, _drawman_scale, _drawman_pen_size
     t = Turtle()
     t.penup()
@@ -28,6 +30,12 @@ def drawman_pen_size(pen_size):
     else:
         _drawman_pen_size = t.pensize(pen_size)
 
+# https://github.com/dinaflox/python0716/blob/master/drawman.py
+def drawman_color(color):
+    global _drawman_color
+    _drawman_color = color
+    t.color(color)
+
 def test_drawman():
     """
     Тестирование работы Чертёжника
@@ -46,7 +54,7 @@ def drawman_draw_grid(color_grid):
     запоминает размер окна поля
     x_width - ширина окна поля в пикселах
     y_height - высота окна поля в пикселах
-    :param color_grid: цвет линий сетки указывается пользоватлем Чертежника при вызове команды drawman_draw_grid(color)
+    :param color_grid: цвет линий сетки указывается пользователем Чертежника при вызове команды drawman_draw_grid(color)
     :return:
     """
     x_width = t.screen.window_width()
@@ -191,4 +199,4 @@ init_drawman()
 if __name__ == '__main__':
     import time
     test_drawman()
-    time.sleep(10)
+    time.sleep(5)

@@ -33,7 +33,8 @@ y_current = 0
 to_point(0, 0)
 pen_down()
 pen_width(4)
-col('red')
+"""col('red')
 for i in range(5):
     on_vector(1,2)
     on_vector(0,-2)
+"""

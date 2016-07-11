@@ -1,12 +1,19 @@
 from drawman import *
 from time import sleep
 
-A = [(0, 0), (100, 0), (100, 100), (0, 100)]
+drawman_scale(8)
+drawman_draw_grid('blue')
+drawman_pen_size(9)
+drawman_color("darkblue")
+
+A = [(0, 0), (30, 0), (30, 30), (0, 30)]
+
 
 pen_down()
+
 for x, y in A:
     to_point(x, y)
 to_point(A[0][0], A[0][1])
 pen_up()
 
-sleep(20)
+sleep(3)

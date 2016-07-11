@@ -5,4 +5,4 @@ from time import sleep
 drawman_scale(10)
 drawman_draw_grid('blue')
 
-sleep(4)
+#sleep(4)
