@@ -34,7 +34,7 @@ def drawman_scale(scale, shag, vod):
     _drawman_scale = scale
 
 def drawman_pen_size(pen_size):
-    """
+    """Установка толщины линии Чертежника
     :param pen_size: толщина линии Чертежника, диапазон от 1 до 10
     """
     global _drawman_pen_size

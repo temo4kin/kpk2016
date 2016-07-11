@@ -1,7 +1,7 @@
 from drawman import *
 from time import sleep
 
-drawman_scale(5, 70, 1)
+drawman_scale(7, 40, 0.3)
 drawman_draw_grid('blue')
 axis()
 drawman_pen_size(9)
