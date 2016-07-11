@@ -8,14 +8,29 @@ def init_drawman():
     global t, x_current, y_current, _drawman_scale, _drawman_pen_size
     t = Turtle()
     t.penup()
+    shag = 40
+    vod = 0.5
     x_current = 0
     y_current = 0
     t.goto(x_current, y_current)
-    drawman_scale(default_scale)
+    drawman_scale(default_scale, shag, vod)
     drawman_pen_size(default_pen_size)
+    #drawman_scale_2(shag, vod)
 
-def drawman_scale(scale):
-    global _drawman_scale
+"""def drawman_scale_2(shag,vod):
+    global _drawman_scale,
+    _drawman_scale = shag/vod
+    # print(_shag,_vod,_drawman_scale)
+"""
+def drawman_scale(scale, shag, vod):
+    global _drawman_scale, _shag,_vod
+    '''
+    Масштаб
+    shag - шаг сетки
+    vod - единиц в одном делении сетки
+    '''
+    _shag = shag
+    _vod = vod
     _drawman_scale = scale
 
 def drawman_pen_size(pen_size):
@@ -42,10 +57,64 @@ def test_drawman():
     :return: None
     """
     pen_down()
+    axis()
     for i in range(5):
         on_vector(10, 20)
         on_vector(0, -20)
     pen_up()
+    to_point(0, 0)
+
+def axis():
+    global t, w, h, _drawman_scale, _vod
+    t.speed(10)
+    # t.turtlesize(2)
+    # Вертикальные линии
+    t.width(3)
+    t.home()
+
+    # Горизонтальные линии
+     # t.reset()
+     # t.tracer(0)
+    t.color('#000000')
+#
+    t.write('  0,0')
+#
+    x = 0
+    y = -10 * _shag
+    coords = " " + str(x) + ", " + str(-10 * _vod)
+    t.goto(x, y)
+    t.write(coords)
+
+#    Начинаем оси рисовать
+    t.down()
+    x=0
+    y=10*_shag
+    coords=str(x)+", "+str(10*_vod)
+    t.goto(x, y-_shag/2)
+    t.left(90)
+    t.stamp()
+    t.right(90)
+    t.write(coords)
+#
+    t.up()
+    x=-10*_shag
+    y=0
+    coords=str(-10*_vod)+", "+str(y)
+    t.goto(x, y)
+    t.write(coords)
+#
+    t.down()
+    x=10*_shag
+    y=0
+    coords=str(10*_vod)+", "+str(y)
+    t.goto(x, y)
+
+    t.stamp()
+    t.write(coords)
+
+    pen_up()
+    x_current = 0
+    y_current = 0
     to_point(0, 0)
 
 def drawman_draw_grid(color_grid):

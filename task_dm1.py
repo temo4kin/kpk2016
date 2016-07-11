@@ -1,12 +1,14 @@
 from drawman import *
 from time import sleep
 
-drawman_scale(8)
+drawman_scale(5, 70, 1)
 drawman_draw_grid('blue')
+axis()
 drawman_pen_size(9)
 drawman_color("darkblue")
 
 A = [(0, 0), (30, 0), (30, 30), (0, 30)]
+
 
 
 pen_down()
