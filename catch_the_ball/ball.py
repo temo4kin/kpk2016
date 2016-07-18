@@ -1,5 +1,8 @@
 import tkinter
 from random import choice, randint
+import time
+#import sys
+
 
 ball_initial_number = 20
 ball_minimal_radius = 15
@@ -92,18 +95,95 @@ def init_ball_catch_game():
     """
     Создаём необходимое для игры количество шариков, по которым нужно будет кликать.
     """
+    global timeEnd
+
     for i in range(ball_initial_number):
         create_random_ball()
+    timeEnd = int(time.time()+20)
+    tick()
+
+"""
+-------- Код от ganilova (https://github.com/ganilova) -------------------
+-------- Немного переработано и изменено ---------------------------------
+"""
+
+def close_win():
+    root.destroy()
+
+def close_rule():
+    tex.destroy()
+    close.destroy()
+    win.destroy()
+
+def new_win():
+    global win, tex, close
+
+    win = tkinter.Toplevel(root)
+    win.title("Правила игры")
+    rule = "За отведенное время надо набрать\n наибольшее количество очков.\nЧасть цветов приносит баллы (1 или 2),\n а другие - отнимают (1 или 2)"
+    tex = tkinter.Label(win, text=rule, width=40,height= 10, font="Verdana 12")
+    tex.pack()
+    close = tkinter.Button(win, text="Закрыть",command=close_rule)#Срабатывает на нажатие и отпуск мышки
+    close.pack()
+
+def init_menu():
+    m = tkinter.Menu(root)
+    root.config(menu = m)
+    fm = tkinter.Menu(m)
+    m.add_cascade(label="Меню", menu=fm)
+    fm.add_command(label="Правила игры", command=new_win)
+    fm.add_command(label="Выход", command=close_win)
+
+
+def ex_it():
+    #global win
+    exit('Время закончилось!')
+
+
+def game_over():
+    global  tex, close, win, points
+    win = tkinter.Toplevel(root)
+    win.title("Конец игры")
+    rule = "Игра закончена!\n вы набрали:", points, " баллов."
+    tex = tkinter.Label(win, text=rule, width=40,height= 10, font="Verdana 12")
+    tex.pack()
+    close = tkinter.Button(win, text="Закрыть")#Срабатывает на нажатие и отпуск мышки
+    close.pack("<Button-1>", ex_it())
+
+
+def tick():
+    global timeEnd
+
+    if timeEnd - int(time.time()) > 0:
+        time_Go.config(text=(timeEnd - int(time.time())))
+    elif timeEnd - int(time.time()) <= 0:
+        #time.sleep(10)
+        #exit('Время закончилось!')
+        #raise SystemExit
+        game_over()
+        #ex_it()
+        return
+    time_Go.after(200, tick)
+
+# ------------- End ----------------------
 
 def init_main_window():
-    global root, canvas, label, points
+    global root, canvas, label, points, time_Go, frame_text
 
     root = tkinter.Tk()
+    root.title("Игра в шарики")
+    init_menu()
+    frame_text = tkinter.Frame(root)
     label_text = tkinter.Label(root, text = 'Заработанные баллы:')
     label_text.pack()
     points = 0
     label = tkinter.Label(root, text=points)#привязка к переменной
     label.pack()
+    time_text = tkinter.Label(frame_text, text='Оставшееся время (сек)', width=20, font='Calibri 14')
+    time_Go = tkinter.Label(frame_text, font='Calibri 14')
+    time_text.grid(row=2, column=0)
+    time_Go.grid(row=2, column=1)
+    frame_text.pack()
     canvas = tkinter.Canvas(root, background='white', width=400, height=400)
     canvas.bind("<Button>", click_ball)
     canvas.bind("<Motion>", move_all_balls)
