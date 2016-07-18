@@ -1,249 +1,272 @@
 from turtle import Turtle
-default_scale = 10 #коэффициент масштабирования Чертежника, по умолчанию = 10
-default_color = 'black' #цвет Чертежника, по умолчанию = "черный"
-default_pen_size = 1 #толщина линии Чертежника, по умолчанию = 1
+from math import fabs, sin
+default_count_point = 15 #количество узлов в сетке
+default_scale = 1
+default_step_grid = 40
+
 
 def init_drawman():
-    """ Инициализация Чертежника"""
-    global t, x_current, y_current, _drawman_scale, _drawman_pen_size
+    global t, x_current, y_current, _drawman_scale, _step_grid, _count_point 
     t = Turtle()
     t.penup()
-    shag = 40
-    vod = 0.5
     x_current = 0
     y_current = 0
     t.goto(x_current, y_current)
-    drawman_scale(default_scale, shag, vod)
-    drawman_pen_size(default_pen_size)
-    #drawman_scale_2(shag, vod)
+    _count_point = default_count_point
+    _step_grid = default_step_grid
+    drawman_scale(default_scale,default_step_grid)
 
-"""def drawman_scale_2(shag,vod):
-    global _drawman_scale,
-    _drawman_scale = shag/vod
-    # print(_shag,_vod,_drawman_scale)
-"""
-def drawman_scale(scale, shag, vod):
-    global _drawman_scale, _shag,_vod
-    '''
-    Масштаб
-    shag - шаг сетки
-    vod - единиц в одном делении сетки
-    '''
-    _shag = shag
-    _vod = vod
-    _drawman_scale = scale
-
-def drawman_pen_size(pen_size):
-    """Установка толщины линии Чертежника
-    :param pen_size: толщина линии Чертежника, диапазон от 1 до 10
+def drawman_scale(scale , new_step_grid ):
+    global _drawman_scale, _step_grid 
+##   
+    _drawman_scale = new_step_grid / scale
+    _step_grid = new_step_grid
+   
+ 
+def set_size_square():
     """
-    global _drawman_pen_size
-    if pen_size > 10:
-        _drawman_pen_size = t.pensize(10)
-    elif pen_size < 1:
-        _drawman_pen_size = t.pensize(1)
+    Установка размера канвы
+    count_point - количество единиц, видимых слева, справа, сверху, снизу
+    """
+    global  _count_point, _step_grid
+   
+    t.screen.screensize (_count_point*_step_grid, _count_point*_step_grid)
+    
+def get_size_square():
+    """
+    Возвращает ширину и высоту канвы
+    """
+    return t.screen.screensize()
+
+def set_color(new_color):
+    """
+    Установка цвета
+    """
+    t.color (new_color)
+
+def draw_grid():
+    """
+    Нарисовать сетку серым цветом
+    в конце перо поднято и Черепашка стоит в центре, цвет восстанавливается до черного
+    """
+    global _step_grid
+    set_color("gray")
+    
+    w,h = get_size_square()
+    
+    w2 = w / 2
+    h2 = h / 2
+    # вертикальные линии снизу вверх
+    x = 0
+    print(_step_grid,w2)
+    while x <=w2: 
+        pen_up()
+        t.goto(x, -h2)
+        pen_down()
+        t.goto(x,h2)
+        x += _step_grid
+    x = 0
+    while x >=-w2: 
+        pen_up()
+        t.goto(x, -h2)
+        pen_down()
+        t.goto(x,h2)
+        x -= _step_grid
+    # горизонтальные линии слева направо
+    y = 0
+    while y <= h2: 
+        pen_up()
+        t.goto(-w2, y)
+        pen_down()
+        t.goto(w2,y)
+        y +=_step_grid
+    y = 0
+    while y >= -h2: 
+        pen_up()
+        t.goto(-w2, y)
+        pen_down()
+        t.goto(w2,y)
+        y -= _step_grid
+
+    # окончание работы
+    pen_up()
+    to_point(0,0)
+    set_color("black")
+
+def pen_width(_width):
+    t.width (_width)
+
+def draw_axis(number):
+    """
+    Нарисовать оси координат  с подписями черным цветом, толщиной 2 пикселя
+    number - вид подписи:
+    0 - без подписей, 1 - только точка (0,0), 2 - единичный интервал, 3 - все числа
+    подписи выводятся коричневым цветом
+    """
+   
+    set_color("black")
+    
+    pen_width(2)
+    w,h = get_size_square()
+    # горизонтальная ось слева направо
+    pen_up()
+    t.goto(-w/2+_step_grid/2,0)
+    pen_down()
+    t.goto(w/2-_step_grid/2,0)
+    t.stamp ()
+    t.right(90)
+    pen_up()
+    t.forward(15)
+    t.left(90)
+    t.write('X')
+    # вертикальная ось снизу вверх
+    pen_up()
+    t.goto(0,-h/2+_step_grid/2)
+    pen_down()
+    t.goto(0,h/2-_step_grid/2)
+    t.left(90)
+    t.stamp()
+    t.left(90)
+    pen_up()
+    t.forward(15)
+        
+    t.write('Y')
+    # подписи к осям
+    pen_up()
+    set_color("brown")
+    
+    if number == 0:
+        pass
+    elif number == 1:
+        t.goto(0,0)
+        t.write('0')
+    elif number == 2:
+        t.goto(0,0)
+        t.write('0')
+        t.goto(0,_step_grid)
+        t.write(str(int(_default_scale)))
+        t.goto(0,-_step_grid)
+        t.write(str(int(-_default_scale)))
+        t.goto(_step_grid,0)
+        t.write(str(int(_default_scale)))
+        t.goto(-_step_grid,0)
+        t.write(str(int(-_default_scale)))
     else:
-        _drawman_pen_size = t.pensize(pen_size)
+        # подписи к горизонтальной оси
+        t.goto(0,0)
+        t.write('0')
+        x = _step_grid
+        t.goto(x, 0)
+        i = _step_grid /_drawman_scale 
+        step_i = i
+        while x < w/2:
+            t.write(str(i))
+            i += step_i
+            x += _step_grid
+            t.goto(x,0)
+        x = -_step_grid
+        t.goto(x, 0)
+        i = -step_i
+        while x > -w/2:
+            t.write(str(i))
+            i -= step_i
+            x -= _step_grid
+            t.goto(x,0)
+            
+        # подписи к вертикальной оси
+        y = _step_grid
+        t.goto(0, y)
+        i = step_i
+        while y < h/2:
+            t.write(str(i))
+            i += step_i
+            y += _step_grid
+            t.goto(0, y)
+        y = -_step_grid
+        t.goto(0, y)
+        i = -step_i
+        while y > -h/2:
+            t.write(str(i))
+            i -= step_i
+            y -= _step_grid
+            t.goto(0, y)
 
-# https://github.com/dinaflox/python0716/blob/master/drawman.py
-def drawman_color(color):
-    global _drawman_color
-    _drawman_color = color
-    t.color(color)
+def speed(new_speed):
+    t.speed(new_speed)
 
+def hide_control():
+    t.hideturtle ()
+    
+def f1(x):
+##        return x*x
+    return sin(x)*5
+    
+def f2(x):
+##    return -0.5*x*x+2*x +5
+    return -0.2*x+1
+    
 def test_drawman():
     """
     Тестирование работы Чертёжника
     :return: None
     """
+    global _drawman_scale
+    
     pen_down()
-    axis()
-    for i in range(5):
-        on_vector(10, 20)
-        on_vector(0, -20)
+    drawman_scale(1,40)
+    set_size_square()
+    speed(10)
+    draw_grid()
+    draw_axis(3)
+    
+##    for i in range(5):
+##        on_vector(10, 20)
+##        on_vector(0, -20)
+##    pen_up()
+##    to_point(0, 0)
+
+  
     pen_up()
-    to_point(0, 0)
 
-def axis():
-    global t, w, h, _drawman_scale, _vod
-    t.speed(10)
-    # t.turtlesize(2)
-    # Вертикальные линии
-    t.width(3)
-    t.home()
-
-    # Горизонтальные линии
-     # t.reset()
-     # t.tracer(0)
-    t.color('#000000')
-#
-    t.write('  0,0')
-#
-    x = 0
-    y = -10 * _shag
-    coords = " " + str(x) + ", " + str(-10 * _vod)
-    t.goto(x, y)
-    t.write(coords)
-
-#    Начинаем оси рисовать
-    t.down()
-    x=0
-    y=10*_shag
-    coords=str(x)+", "+str(10*_vod)
-    t.goto(x, y-_shag/2)
-    t.left(90)
-    t.stamp()
-    t.right(90)
-    t.write(coords)
-#
-    t.up()
-    x=-10*_shag
-    y=0
-    coords=str(-10*_vod)+", "+str(y)
-    t.goto(x, y)
-    t.write(coords)
-#
-    t.down()
-    x=10*_shag
-    y=0
-    coords=str(10*_vod)+", "+str(y)
-    t.goto(x, y)
-
-    t.stamp()
-    t.write(coords)
+    x = -6.0
+    to_point(x,f1(x))
+    pen_down()
+    while x<8:
+        to_point(x, f1(x))
+        x += 0.1
+    pen_up()
 
     pen_up()
-    x_current = 0
-    y_current = 0
-    to_point(0, 0)
 
-def drawman_draw_grid(color_grid):
-    """
-    рисует кооринтаную сетку без осей
-    запоминает размер окна поля
-    x_width - ширина окна поля в пикселах
-    y_height - высота окна поля в пикселах
-    :param color_grid: цвет линий сетки указывается пользователем Чертежника при вызове команды drawman_draw_grid(color)
-    :return:
-    """
-    x_width = t.screen.window_width()
-    y_height = t.screen.window_height()
-    t.speed(25)
-    drawman_draw_Hline(x_width, y_height, color_grid)
-    drawman_draw_Vline(x_width, y_height, color_grid)
+    x = -6.0
+    to_point(x,f2(x))
+    pen_down()
+    while x<8:
+        to_point(x, f2(x))
+        x += 0.1
     pen_up()
-    to_point(0, 0)
-    t.speed(1)
 
-def drawman_draw_Vline(x_width, y_height, color):
-    """
-    рисование линий сетки из центра поля (т.е. из начальной позиции Чертежника)
+    intersection_point(f1,f2,-6,8)
+    pen_up()
+    to_point(0,0)
+    hide_control()
 
-    рисует вертикальные линии сетки отельно по каждой четверти, учитывая масштабирование Четрежника
-
-    :param color: цвет линий сетки указывается пользоватлем Чертежника при вызове команды drawman_draw_grid(color)
-    :param x_width: ширина окна поля Чертежника, автоматически определяется при вызове команды drawman_draw_grid()
-    :param y_height: высота окна поля Чертежника, автоматически определяется при вызове команды drawman_draw_grid()
-    :return:
-    """
-    x = 0
-    y = 0
-    t.goto(x, y)
-    while x <= x_width//2:
-        t.pencolor(color)
-        t.goto(x, y)
-        t.pendown()
-        t.goto(x, y_height//2)
-        t.penup()
-        x = x + x_width//_drawman_scale
-
-    x = 0
-    y = 0
-    t.goto(x, y)
-    while x >= -x_width//2:
-        t.pencolor(color)
-        t.goto(x, y)
-        t.pendown()
-        t.goto(x, y_height//2)
-        t.penup()
-        x = x - x_width//_drawman_scale
-
-    x = 0
-    y = 0
-    t.goto(x, y)
-    while x >= -x_width//2:
-        t.pencolor(color)
-        t.goto(x, y)
-        t.pendown()
-        t.goto(x, -y_height//2)
-        t.penup()
-        x = x - x_width//_drawman_scale
-
-    x = 0
-    y = 0
-    t.goto(x, y)
-    while x <= x_width//2:
-        t.pencolor(color)
-        t.goto(x, y)
-        t.pendown()
-        t.goto(x, -y_height//2)
-        t.penup()
-        x = x + x_width//_drawman_scale
+def intersection_point(f1,f2,x_begin,x_end):
+    eps = 0.001
+    x_step = 0.0001
+    set_color("red")
+    
+    x = x_begin
+    while x <= x_end:
+        if fabs(f1(x)-f2(x))< eps:
+            pen_up()
+            to_point(x,f2(x))
+            pen_down()
+            t.dot(5)
+        x += x_step
+    
 
 
-def drawman_draw_Hline(x_width, y_height, color):
-    """
-    рисование линий сетки из центра поля (т.е. из начальной позиции Чертежника)
-
-    рисует горизонтальные линии сетки отельно по каждой четверти, учитывая масштабирование Четрежника
-
-    :param color: цвет линий сетки указывается пользоватлем Чертежника при вызове команды drawman_draw_grid(color)
-    :param x_width: ширина окна поля Чертежника, автоматически определяется при вызове команды drawman_draw_grid()
-    :param y_height: высота окна поля Чертежника, автоматически определяется при вызове команды drawman_draw_grid()
-    """
-    y = 0
-    x = 0
-    t.goto(x, y)
-    while y <= y_height//2:
-        t.pencolor(color)
-        t.goto(x, y)
-        t.pendown()
-        t.goto(x_width//2, y)
-        t.penup()
-        y = y + y_height//_drawman_scale
-
-    y = 0
-    x = 0
-    t.goto(x, y)
-    while y >= -y_height//2:
-        t.pencolor(color)
-        t.goto(x, y)
-        t.pendown()
-        t.goto(x_width//2, y)
-        t.penup()
-        y = y - y_height//_drawman_scale
-
-    y = 0
-    x = 0
-    t.goto(x, y)
-    while y >= -y_height//2:
-        t.pencolor(color)
-        t.goto(x, y)
-        t.pendown()
-        t.goto(-x_width//2, y)
-        t.penup()
-        y = y - y_height//_drawman_scale
-
-    y = 0
-    x = 0
-    t.goto(x, y)
-    while y <= y_height//2:
-        t.pencolor(color)
-        t.goto(x, y)
-        t.pendown()
-        t.goto(-x_width//2, y)
-        t.penup()
-        y = y + y_height//_drawman_scale
 
 def pen_down():
     t.pendown()
@@ -254,18 +277,21 @@ def pen_up():
 
 
 def on_vector(dx, dy):
-    to_point(x_current + dx, y_current + dy)
+    global x_current, y_current, _drawman_scale
+    to_point(x_current +  dx, y_current + dy)
 
 
 def to_point(x, y):
-    global x_current, y_current
+    global x_current, y_current, _drawman_scale
     x_current = x
     y_current = y
     t.goto(_drawman_scale*x_current, _drawman_scale*y_current)
 
 
 init_drawman()
+
 if __name__ == '__main__':
     import time
+    
     test_drawman()
-    time.sleep(5)
+    time.sleep(3)
