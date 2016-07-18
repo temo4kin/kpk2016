@@ -4,7 +4,8 @@ from random import choice, randint
 ball_initial_number = 20
 ball_minimal_radius = 15
 ball_maximal_radius = 40
-ball_available_colors = '0123456789ABCDEF'#['green', 'blue', 'red', 'lightgray', '#FF00FF', '#FFFF00']
+colors = ('red', 'green', 'blue', 'yellow', 'cyan', 'gray', 'navy', 'silver', 'black', 'olive', 'teal', 'magenta', 'maroon', 'lightgreen', 'lightblue', 'lightyellow', 'lightcyan', 'lightgray', 'maroon', 'darkred', 'darkgreen', 'darkblue', 'darkcyan', 'darkgray', 'darkmagenta')
+#ball_available_colors = '0123456789ABCDEF'#['green', 'blue', 'red', 'lightgray', '#FF00FF', '#FFFF00']
 balls_coord = []#список координат шариков
 balls_num = []#список номеров шариков
 
@@ -50,12 +51,12 @@ def create_random_ball():
     создаёт шарик в случайном месте игрового холста canvas,
      при этом шарик не выходит за границы холста!
     """
-    global balls_coord, balls_num
+    global balls_coord, balls_num, color
     R = randint(ball_minimal_radius, ball_maximal_radius)
     x = randint(0, int(canvas['width'])-1-2*R)
     y = randint(0, int(canvas['height'])-1-2*R)
     #рисуем шарик и запоминаем его номер в num_oval
-    num_oval = canvas.create_oval(x, y, x+R, y+R, width=0, fill=random_color())
+    num_oval = canvas.create_oval(x, y, x+R, y+R, width=0, fill= random_color())
     dx = randint(-2, 2)
     dy = randint(-2, 2)
     # запоминаем идентификатор, вектор и радиус движения нового шарика
@@ -65,11 +66,15 @@ def create_random_ball():
 def random_color():
     """
     :return: Случайный цвет из некоторого набора цветов
-    """
+
     #return choice(ball_available_colors)
+
     color = '#'
     for c in range(6):
         color = color + choice(ball_available_colors)
+    """
+    n = randint(0, 24)
+    color = colors[n]
     return color
 
 
@@ -95,7 +100,6 @@ def init_main_window():
     canvas.pack()
     label_text = tkinter.Label(root, text = 'За бонусные цвета даётся по 2 очка:')
     label_text.pack()
-    canvas2 = tkinter.Canvas(root)
     canvas2 = tkinter.Canvas(root)
     canvas2.create_rectangle(10,10,30,30,fill="white", width=0)
     canvas2.create_rectangle(40,10,60,30,fill="red", width=0)
